@@ -20,3 +20,6 @@ export 'src/common/http_client.dart';
 export 'src/common/web_socket_util.dart';
 export 'src/common/convert_helper.dart';
 export 'src/common/binary_writer.dart';
+
+export 'src/platform/bilibili_site.dart';
+export 'src/danmaku/bilibili_danmaku.dart';

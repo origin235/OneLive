@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:simple_live_core/simple_live_core.dart';
 
 class StreamGrid extends StatelessWidget {
   final List<LiveRoomItem> items;
+  final String platformId;
 
-  const StreamGrid({super.key, required this.items});
+  const StreamGrid({
+    super.key,
+    required this.items,
+    required this.platformId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,23 +23,26 @@ class StreamGrid extends StatelessWidget {
         mainAxisSpacing: 8,
       ),
       itemCount: items.length,
-      itemBuilder: (context, index) => StreamCard(item: items[index]),
+      itemBuilder: (context, index) =>
+          StreamCard(item: items[index], platformId: platformId),
     );
   }
 }
 
 class StreamCard extends StatelessWidget {
   final LiveRoomItem item;
+  final String platformId;
 
-  const StreamCard({super.key, required this.item});
+  const StreamCard({
+    super.key,
+    required this.item,
+    required this.platformId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // 导航到播放器页面，platform 暂用空字符串，后续接入真实数据
-        // TODO: 从 LiveRoomItem 传递 platform 信息
-      },
+      onTap: () => context.go('/player/$platformId/${item.roomId}'),
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: Column(

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:simple_live_core/simple_live_core.dart';
 
 import 'core/router/router.dart';
 import 'core/theme/theme.dart';
+import 'features/live/data/datasources/site_registry.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 注册所有直播平台
+  SiteRegistry.register(BiliBiliSite());
+
   runApp(
     const ProviderScope(
       child: OneLiveApp(),

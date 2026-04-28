@@ -29,7 +29,10 @@ class HomePage extends ConsumerWidget {
             child: roomsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('加载失败: $e')),
-              data: (result) => StreamGrid(items: result.items),
+              data: (result) => StreamGrid(
+                items: result.items,
+                platformId: selectedPlatform,
+              ),
             ),
           ),
         ],
