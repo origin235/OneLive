@@ -48,6 +48,9 @@ android/key.properties
 *.freezed.dart
 *.mocks.dart
 
+# Flutter generated
+.metadata
+
 # Local env
 .env
 .env.*
