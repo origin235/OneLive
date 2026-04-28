@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'core/router/router.dart';
+import 'core/theme/theme.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    const ProviderScope(
+      child: OneLiveApp(),
+    ),
+  );
+}
+
+class OneLiveApp extends ConsumerWidget {
+  const OneLiveApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
+      title: 'OneLive',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
+      routerConfig: router,
+      localeListResolutionCallback: (locales, supportedLocales) {
+        // 优先中文
+        for (final locale in locales ?? []) {
+          if (locale.languageCode == 'zh') return locale;
+        }
+        return null;
+      },
+      supportedLocales: const [
+        Locale('zh', 'CN'),
+        Locale('en', 'US'),
+      ],
+      localizationsDelegates: const [
+        DefaultMaterialLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+    );
+  }
+}

@@ -1,0 +1,19 @@
+name: simple_live_core
+version: 1.0.3
+description: "OneLive 聚合直播核心库 — 四平台 API 客户端与弹幕协议封装"
+publish_to: "none"
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  dio: ^5.5.0+1
+  logger: ^2.4.0
+  web_socket_channel: ^3.0.1
+  protobuf: ^3.1.0
+  crypto: ^3.0.3
+  brotli: ^0.6.0
+  fixnum: ^1.1.0
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0
