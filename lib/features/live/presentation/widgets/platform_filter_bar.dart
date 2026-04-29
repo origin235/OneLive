@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../settings/presentation/providers/settings_providers.dart';
 import '../../data/datasources/site_registry.dart';
 
-class PlatformFilterBar extends StatelessWidget {
+class PlatformFilterBar extends ConsumerWidget {
   final String selectedId;
   final ValueChanged<String> onChanged;
 
@@ -12,8 +15,14 @@ class PlatformFilterBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final sites = SiteRegistry.all;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sites = SiteRegistry.all
+        .where((s) => ref.watch(platformEnabledProvider(s.id)))
+        .toList();
+
+    if (sites.isEmpty) {
+      return const SizedBox(height: 48);
+    }
 
     return SizedBox(
       height: 48,

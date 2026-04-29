@@ -59,6 +59,7 @@ dependencies:
   lottie: ^3.3.2
   flutter_smart_dialog: ^4.9.8+9
   dynamic_color: ^1.8.1
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

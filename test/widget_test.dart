@@ -1,12 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:onelive/main.dart';
+import 'package:onelive/features/settings/presentation/providers/settings_providers.dart';
 
 void main() {
   testWidgets('App renders home page', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+
+    final prefs = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
-      const ProviderScope(child: OneLiveApp()),
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
+        child: const OneLiveApp(),
+      ),
     );
     await tester.pumpAndSettle();
 

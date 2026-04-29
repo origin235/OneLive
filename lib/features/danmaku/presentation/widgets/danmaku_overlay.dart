@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_live_core/simple_live_core.dart';
 
-/// 一条正在滚动的弹幕数据
 class _DanmakuItem {
   final String text;
   final Color color;
@@ -23,12 +22,20 @@ class DanmakuOverlay extends StatefulWidget {
   final LiveDanmaku? danmaku;
   final dynamic danmakuData;
   final bool enabled;
+  final double opacity;
+  final double fontSize;
+  final double speed;
+  final double area;
 
   const DanmakuOverlay({
     super.key,
     this.danmaku,
     this.danmakuData,
     this.enabled = true,
+    this.opacity = 1.0,
+    this.fontSize = 18.0,
+    this.speed = 150.0,
+    this.area = 0.8,
   });
 
   @override
@@ -42,8 +49,7 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
   DateTime _lastTick = DateTime.now();
   double _screenWidth = 0;
   int _trackCount = 6;
-  static const double _trackHeight = 36;
-  static const double _speed = 150; // px/s
+  static const double _baseTrackHeight = 36;
   bool _danmakuStarted = false;
 
   @override
@@ -82,8 +88,13 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
   void _addMessage(String message, String userName, LiveMessageColor color) {
     final text = userName.isNotEmpty ? '$userName: $message' : message;
     final textStyle = TextStyle(
-      color: Color.fromARGB(255, color.r, color.g, color.b),
-      fontSize: 18,
+      color: Color.fromARGB(
+        (255 * widget.opacity).toInt().clamp(0, 255),
+        color.r,
+        color.g,
+        color.b,
+      ),
+      fontSize: widget.fontSize,
       fontWeight: FontWeight.w600,
       shadows: const [
         Shadow(color: Colors.black, blurRadius: 2),
@@ -101,7 +112,12 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
     setState(() {
       _items.add(_DanmakuItem(
         text: text,
-        color: Color.fromARGB(255, color.r, color.g, color.b),
+        color: Color.fromARGB(
+          (255 * widget.opacity).toInt().clamp(0, 255),
+          color.r,
+          color.g,
+          color.b,
+        ),
         x: _screenWidth,
         width: width,
         track: track,
@@ -110,6 +126,7 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
   }
 
   int _pickTrack() {
+    final maxTrack = (_trackCount * widget.area).ceil().clamp(1, _trackCount);
     final trackOccupancy = List<double>.filled(_trackCount, 0);
     for (final item in _items) {
       final rightEdge = item.x + item.width;
@@ -119,7 +136,7 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
     }
     int bestTrack = 0;
     double bestVal = double.infinity;
-    for (int i = 0; i < _trackCount; i++) {
+    for (int i = 0; i < maxTrack; i++) {
       if (trackOccupancy[i] < bestVal) {
         bestVal = trackOccupancy[i];
         bestTrack = i;
@@ -134,7 +151,7 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
     _lastTick = now;
     if (deltaMs <= 0) return;
 
-    final deltaPx = _speed * deltaMs / 1000;
+    final deltaPx = widget.speed * deltaMs / 1000;
     final toRemove = <_DanmakuItem>[];
 
     for (final item in _items) {
@@ -164,13 +181,18 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
     return LayoutBuilder(
       builder: (context, constraints) {
         _screenWidth = constraints.maxWidth;
-        _trackCount = (constraints.maxHeight / _trackHeight).floor().clamp(1, 20);
+        _trackCount =
+            (constraints.maxHeight / _baseTrackHeight).floor().clamp(1, 20);
         return IgnorePointer(
-          child: CustomPaint(
-            size: Size(constraints.maxWidth, constraints.maxHeight),
-            painter: _DanmakuPainter(
-              items: _items,
-              trackHeight: _trackHeight,
+          child: RepaintBoundary(
+            child: CustomPaint(
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+              painter: _DanmakuPainter(
+                items: _items,
+                trackHeight: _baseTrackHeight,
+                opacity: widget.opacity,
+                fontSize: widget.fontSize,
+              ),
             ),
           ),
         );
@@ -182,8 +204,15 @@ class _DanmakuOverlayState extends State<DanmakuOverlay>
 class _DanmakuPainter extends CustomPainter {
   final List<_DanmakuItem> items;
   final double trackHeight;
+  final double opacity;
+  final double fontSize;
 
-  _DanmakuPainter({required this.items, required this.trackHeight});
+  _DanmakuPainter({
+    required this.items,
+    required this.trackHeight,
+    required this.opacity,
+    required this.fontSize,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -191,7 +220,7 @@ class _DanmakuPainter extends CustomPainter {
       final y = item.track * trackHeight;
       final textStyle = TextStyle(
         color: item.color,
-        fontSize: 18,
+        fontSize: fontSize,
         fontWeight: FontWeight.w600,
         shadows: const [
           Shadow(color: Colors.black, blurRadius: 2),

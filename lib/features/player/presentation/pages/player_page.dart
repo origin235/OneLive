@@ -9,6 +9,7 @@ import '../../../danmaku/data/danmaku_providers.dart';
 import '../../../danmaku/presentation/widgets/danmaku_overlay.dart';
 import '../../../favorites/presentation/providers/favorites_providers.dart';
 import '../../../live/presentation/providers/live_providers.dart';
+import '../../../settings/presentation/providers/settings_providers.dart';
 
 class PlayerPage extends ConsumerStatefulWidget {
   final String platform;
@@ -118,7 +119,11 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
             DanmakuOverlay(
               danmaku: _danmaku,
               danmakuData: detailAsync.value!.danmakuData,
-              enabled: true,
+              enabled: ref.watch(danmakuEnabledProvider),
+              opacity: ref.watch(danmakuOpacityProvider),
+              fontSize: ref.watch(danmakuFontSizeProvider),
+              speed: ref.watch(danmakuSpeedProvider),
+              area: ref.watch(danmakuAreaProvider),
             ),
           // 加载指示
           if (playUrlAsync.isLoading)

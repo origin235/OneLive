@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -59,14 +60,20 @@ class StreamCard extends ConsumerWidget {
               children: [
                 Expanded(
                   child: item.cover.isNotEmpty
-                      ? Image.network(
+                      ? ExtendedImage.network(
                           item.cover,
                           fit: BoxFit.cover,
                           width: double.infinity,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.live_tv, size: 48),
-                          ),
+                          cache: true,
+                          loadStateChanged: (state) {
+                            if (state.extendedImageLoadState == LoadState.failed) {
+                              return Container(
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.live_tv, size: 48),
+                              );
+                            }
+                            return state.completedWidget;
+                          },
                         )
                       : Container(
                           color: Colors.grey[300],
