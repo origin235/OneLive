@@ -22,4 +22,11 @@ export 'src/common/convert_helper.dart';
 export 'src/common/binary_writer.dart';
 
 export 'src/platform/bilibili_site.dart';
+export 'src/platform/douyu_site.dart';
+export 'src/platform/huya_site.dart';
+export 'src/platform/douyin_site.dart';
+
 export 'src/danmaku/bilibili_danmaku.dart';
+export 'src/danmaku/douyu_danmaku.dart';
+export 'src/danmaku/huya_danmaku.dart';
+export 'src/danmaku/douyin_danmaku.dart';

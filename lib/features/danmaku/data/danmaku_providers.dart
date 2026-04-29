@@ -6,6 +6,12 @@ class DanmakuFactory {
     switch (platformId) {
       case 'bilibili':
         return BiliBiliDanmaku();
+      case 'douyu':
+        return DouyuDanmaku();
+      case 'huya':
+        return HuyaDanmaku();
+      case 'douyin':
+        return DouyinDanmaku();
       default:
         return null;
     }

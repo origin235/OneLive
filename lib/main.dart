@@ -12,6 +12,9 @@ void main() {
 
   // 注册所有直播平台
   SiteRegistry.register(BiliBiliSite());
+  SiteRegistry.register(DouyuSite());
+  SiteRegistry.register(HuyaSite());
+  SiteRegistry.register(DouyinSite());
 
   runApp(
     const ProviderScope(
