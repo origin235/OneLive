@@ -7,6 +7,7 @@ import 'package:simple_live_core/simple_live_core.dart';
 
 import '../../../danmaku/data/danmaku_providers.dart';
 import '../../../danmaku/presentation/widgets/danmaku_overlay.dart';
+import '../../../favorites/presentation/providers/favorites_providers.dart';
 import '../../../live/presentation/providers/live_providers.dart';
 
 class PlayerPage extends ConsumerStatefulWidget {
@@ -27,6 +28,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
   late final Player _player;
   late final VideoController _videoController;
   bool _playbackStarted = false;
+  bool _watchRecorded = false;
   LiveDanmaku? _danmaku;
   bool _danmakuReady = false;
 
@@ -68,6 +70,18 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     }
   }
 
+  void _recordWatch(LiveRoomDetail detail) {
+    if (_watchRecorded) return;
+    _watchRecorded = true;
+    ref.read(favoriteRepositoryProvider).recordWatch(
+          platform: widget.platform,
+          roomId: widget.roomId,
+          title: detail.title,
+          cover: detail.cover,
+          userName: detail.userName,
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final params = PlayerParams(
@@ -83,10 +97,11 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
       Future.microtask(_startPlayback);
     }
 
-    // 房间详情就绪后创建弹幕客户端
+    // 房间详情就绪后创建弹幕客户端 + 记录观看历史
     if (!_danmakuReady && detailAsync.hasValue) {
       _danmakuReady = true;
       _danmaku = DanmakuFactory.create(widget.platform);
+      _recordWatch(detailAsync.value!);
     }
 
     return Scaffold(
@@ -132,6 +147,10 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     BuildContext context,
     AsyncValue<dynamic> detailAsync,
   ) {
+    final isFavAsync = ref.watch(
+      isFavoriteProvider((platform: widget.platform, roomId: widget.roomId)),
+    );
+
     return Container(
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       color: Colors.black54,
@@ -164,6 +183,35 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
                 style: TextStyle(color: Colors.white70),
               ),
             ),
+          ),
+          isFavAsync.maybeWhen(
+            data: (isFav) => IconButton(
+              icon: Icon(
+                isFav ? Icons.favorite : Icons.favorite_outline,
+                color: isFav ? Colors.red : Colors.white,
+              ),
+              onPressed: () {
+                final repo = ref.read(favoriteRepositoryProvider);
+                if (isFav) {
+                  repo.removeFavorite(widget.platform, widget.roomId);
+                } else {
+                  final detailData = detailAsync.valueOrNull;
+                  repo.addFavorite(
+                    platform: widget.platform,
+                    roomId: widget.roomId,
+                    title: detailData?.title ?? '',
+                    cover: detailData?.cover ?? '',
+                    userName: detailData?.userName ?? '',
+                  );
+                }
+                ref.invalidate(
+                  isFavoriteProvider(
+                    (platform: widget.platform, roomId: widget.roomId),
+                  ),
+                );
+              },
+            ),
+            orElse: () => const SizedBox.shrink(),
           ),
         ],
       ),
