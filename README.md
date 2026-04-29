@@ -6,10 +6,10 @@
 
 | 平台 | 直播列表 | 播放 | 弹幕 | 搜索 |
 |------|---------|------|------|------|
-| B站 | 已完成 | 计划中 | 已完成 | 已完成 |
-| 斗鱼 | 计划中 | 计划中 | 计划中 | 计划中 |
-| 虎牙 | 计划中 | 计划中 | 计划中 | 计划中 |
-| 抖音 | 计划中 | 计划中 | 计划中 | 计划中 |
+| B站 | ✅ | ✅ | ✅ | ✅ |
+| 斗鱼 | ✅ | ✅ | ✅ | ✅ |
+| 虎牙 | ✅ | ✅ | ✅ | ✅ |
+| 抖音 | ✅ | ✅ | ✅ | ✅ |
 
 ## 技术栈
 
@@ -26,14 +26,26 @@
 
 ```
 onelive/
-├── simple_live_core/        # 纯 Dart 核心库（与 Flutter UI 解耦）
+├── simple_live_core/          # 纯 Dart 核心库（与 Flutter UI 解耦）
 │   └── lib/src/
-│       ├── interface/       # LiveSite / LiveDanmaku 抽象接口
-│       ├── model/           # 数据模型
-│       └── common/          # HTTP/WebSocket 通用工具
+│       ├── interface/         # LiveSite / LiveDanmaku 抽象接口
+│       ├── model/             # 数据模型
+│       ├── common/            # HTTP/WebSocket 通用工具
+│       ├── platform/          # 四平台 LiveSite 实现
+│       └── danmaku/           # 四平台弹幕客户端
 └── lib/
-    ├── core/                # 基础设施 (API/DB/Router/Theme)
-    └── features/            # 功能模块 (live/player/danmaku/favorites/search/settings)
+    ├── core/
+    │   ├── api/               # Dio 实例、自定义异常
+    │   ├── database/          # Drift 数据库 (收藏+历史)
+    │   ├── router/            # GoRouter + 4 Tab 布局
+    │   └── theme/             # Material 3 亮色/暗色主题
+    └── features/
+        ├── live/              # 直播浏览与发现
+        ├── player/            # 直播播放器
+        ├── danmaku/           # 弹幕覆盖层
+        ├── favorites/         # 收藏与历史
+        ├── search/            # 跨平台搜索
+        └── settings/          # 应用设置
 ```
 
 ## 环境要求
@@ -46,12 +58,12 @@ onelive/
 ## 快速开始
 
 ```bash
-# 1. 克隆项目
-cd onelive
-
-# 2. 安装依赖
+# 1. 安装依赖
 flutter pub get
 cd simple_live_core && dart pub get && cd ..
+
+# 2. media_kit 原生库设置（flutter clean 后必须运行）
+bash .media_kit_libs/setup.sh
 
 # 3. 生成代码
 dart run build_runner build -d
@@ -60,19 +72,20 @@ dart run build_runner build -d
 flutter run -d windows   # Windows
 flutter run -d android   # Android
 
-# 5. 测试
+# 5. 测试与分析
+flutter analyze
 flutter test
-cd simple_live_core && dart test && cd ..
+cd simple_live_core && dart analyze && dart test && cd ..
 ```
 
 ## 开发进度
 
 - [x] 阶段 1：项目脚手架
 - [x] 阶段 2：B站集成 + 直播列表
-- [ ] 阶段 3：播放器 (media_kit)
-- [ ] 阶段 4：弹幕覆盖层
-- [ ] 阶段 5：多平台扩展（斗鱼/虎牙/抖音）
-- [ ] 阶段 6：收藏与历史
+- [x] 阶段 3：播放器 (media_kit)
+- [x] 阶段 4：弹幕覆盖层
+- [x] 阶段 5：多平台扩展（斗鱼/虎牙/抖音）
+- [x] 阶段 6：收藏与历史
 - [ ] 阶段 7：跨平台搜索
 - [ ] 阶段 8：设置与打磨
 - [ ] 阶段 9：测试与发布
