@@ -18,6 +18,9 @@ OneLive — 跨平台直播聚合应用，聚合 B站/斗鱼/虎牙/抖音四平
 flutter pub get
 cd simple_live_core && dart pub get && cd ..
 
+# media_kit 原生库设置 (flutter clean 之后、构建之前必须运行)
+bash .media_kit_libs/setup.sh
+
 # 代码生成 (freezed, json_serializable, drift, riverpod)
 dart run build_runner build -d
 
@@ -40,6 +43,14 @@ flutter run -d android
 flutter build windows
 flutter build appbundle --target-platform android-arm64
 ```
+
+### media_kit 原生库说明
+
+防火墙阻止 GitHub HTTPS，media_kit 的原生库（MPV/ANGLE）无法在构建时自动下载。
+已将所需文件预置在 `.media_kit_libs/` 中，每次 `flutter clean` 后需运行 `bash .media_kit_libs/setup.sh` 将归档复制到构建目录。
+
+- Windows: `mpv-dev-x86_64-20230924-git-652a1dd.7z` + `ANGLE.7z` → `build/windows/x64/`
+- Android: `default-arm64-v8a.jar` → `build/media_kit_libs_android_video/v1.1.7/`
 
 ## 架构总览
 
