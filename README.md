@@ -88,7 +88,7 @@ cd simple_live_core && dart analyze && dart test && cd ..
 - [x] 阶段 6：收藏与历史
 - [x] 阶段 7：跨平台搜索
 - [x] 阶段 8：设置与打磨
-- [ ] 阶段 9：测试与发布
+- [x] 阶段 9：测试与发布
 
 ## 免责声明
 
