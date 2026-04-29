@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
+import 'package:simple_live_core/simple_live_core.dart';
+
+import '../../../danmaku/data/danmaku_providers.dart';
+import '../../../danmaku/presentation/widgets/danmaku_overlay.dart';
 import '../../../live/presentation/providers/live_providers.dart';
 
 class PlayerPage extends ConsumerStatefulWidget {
@@ -23,6 +27,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
   late final Player _player;
   late final VideoController _videoController;
   bool _playbackStarted = false;
+  LiveDanmaku? _danmaku;
+  bool _danmakuReady = false;
 
   @override
   void initState() {
@@ -33,6 +39,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
 
   @override
   void dispose() {
+    _danmaku?.stop();
     _player.dispose();
     super.dispose();
   }
@@ -76,6 +83,12 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
       Future.microtask(_startPlayback);
     }
 
+    // 房间详情就绪后创建弹幕客户端
+    if (!_danmakuReady && detailAsync.hasValue) {
+      _danmakuReady = true;
+      _danmaku = DanmakuFactory.create(widget.platform);
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -85,6 +98,13 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
             controller: _videoController,
             fit: BoxFit.contain,
           ),
+          // 弹幕覆盖层
+          if (_danmaku != null && detailAsync.hasValue)
+            DanmakuOverlay(
+              danmaku: _danmaku,
+              danmakuData: detailAsync.value!.danmakuData,
+              enabled: true,
+            ),
           // 加载指示
           if (playUrlAsync.isLoading)
             const Center(child: CircularProgressIndicator(color: Colors.white)),
